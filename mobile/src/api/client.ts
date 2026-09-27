@@ -12,9 +12,16 @@ const client = axios.create({
 
 // Attach JWT automatically for every request if one is stored
 client.interceptors.request.use(async (config) => {
+  if (config.url === '/auth/login' || config.url === '/auth/register') {
+    config.headers.delete('Authorization');
+    return config;
+  }
+
   const token = await AsyncStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    config.headers.delete('Authorization');
   }
   return config;
 });

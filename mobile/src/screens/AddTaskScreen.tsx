@@ -105,9 +105,26 @@ const AddTaskScreen: React.FC = () => {
 
   // Simple date validation for YYYY-MM-DD HH:MM format
   const parseLocalDate = (val: string): string | undefined => {
-    if (!val.trim()) return undefined;
-    const d = new Date(val.trim());
-    if (isNaN(d.getTime())) return undefined;
+    const match = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/.exec(val.trim());
+    if (!match) return undefined;
+
+    const [, yearText, monthText, dayText, hourText, minuteText] = match;
+    const year = Number(yearText);
+    const month = Number(monthText);
+    const day = Number(dayText);
+    const hour = Number(hourText);
+    const minute = Number(minuteText);
+    if (month < 1 || month > 12 || hour > 23 || minute > 59) return undefined;
+
+    const d = new Date(year, month - 1, day, hour, minute);
+    if (
+      d.getFullYear() !== year ||
+      d.getMonth() !== month - 1 ||
+      d.getDate() !== day ||
+      d.getHours() !== hour ||
+      d.getMinutes() !== minute
+    ) return undefined;
+
     return d.toISOString();
   };
 
